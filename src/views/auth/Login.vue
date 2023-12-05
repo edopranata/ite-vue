@@ -34,16 +34,16 @@ function clear () {
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
-      <v-img height="360" :src="imgLogin" />
       <v-row align="center">
-        <v-col md="6" cols="12" offset-md="3">
-          <v-card variant="flat" class="py-10" height="300" align="left">
+        <v-col cols="12" lg="4" offset-lg="4" md="6" offset-md="3" sm="8" offset-sm="2">
+          <v-card variant="flat" class="py-10" align="left">
+            <v-img :src="imgLogin" />
             <form>
               <v-text-field
                 v-model="state.username"
                 :error-messages="v$.username.$errors.map(e => e.$message)"
                 :counter="20"
-                label="Userame"
+                label="Username"
                 required
                 @input="v$.username.$touch"
                 @blur="v$.username.$touch"
@@ -59,7 +59,7 @@ function clear () {
                 @blur="v$.password.$touch"
               ></v-text-field>
 
-              <div class="d-flex justify-md-space-between">
+              <div class="d-flex justify-space-between pt-10">
                 <v-btn
                   @click="router.back()"
                 >
@@ -71,10 +71,7 @@ function clear () {
                 >
                   submit
                 </v-btn>
-
-
               </div>
-
             </form>
           </v-card>
         </v-col>

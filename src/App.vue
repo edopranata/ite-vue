@@ -7,7 +7,25 @@
 </template>
 
 <script setup>
-  //
+import { useTheme } from 'vuetify'
+import { useAppStore } from "@/store/app";
+import {watch} from "vue";
+
+const appStore = useAppStore()
+const theme = useTheme()
+
+watch(appStore, (darkModeStatus) => {
+  console.log('Trigger')
+  theme.global.name.value = darkModeStatus.theme.dark ? 'dark' : 'light'
+}, {
+  deep: true
+})
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  appStore.toggleTheme()
+});
+
+
 </script>
 
 <style scoped>
