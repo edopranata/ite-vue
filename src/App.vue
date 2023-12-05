@@ -10,9 +10,21 @@
 import { useTheme } from 'vuetify'
 import { useAppStore } from "@/store/app";
 import {watch} from "vue";
-
+import { onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
+const { mdAndUp } = useDisplay()
 const appStore = useAppStore()
 const theme = useTheme()
+
+onMounted(() => {
+  window.addEventListener("resize", () => {
+    if(!mdAndUp.value){
+      appStore.theme.drawer = mdAndUp.value
+    }
+  });
+
+})
+
 
 watch(appStore, (darkModeStatus) => {
   console.log('Trigger')

@@ -61,14 +61,14 @@
         >
           <v-icon>mdi-minus</v-icon>
         </v-btn>
+
+        <v-spacer />
         <v-btn
           icon
           @click.stop="appStore.toggleTheme()"
         >
           <v-icon>mdi-theme-light-dark</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <v-spacer />
       </v-app-bar>
       <v-main>
         <v-container>
@@ -102,7 +102,6 @@ const items = [
     to: '/login'
   }
 ]
-const title = 'Page Settings'
 </script>
 
 
