@@ -3,8 +3,20 @@
 import imgLogin from '@/assets/login.png'
 import { reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import {maxValue, minValue, required} from '@vuelidate/validators'
+import {maxLength, minLength, required} from '@vuelidate/validators'
 import router from "@/router";
+import { useAuthStore } from "@/stores/auth";
+import { storeToRefs } from "pinia";
+
+const authStore = useAuthStore()
+const { errors } = storeToRefs(useAuthStore())
+
+import { Device } from '@capacitor/device';
+const logDeviceInfo = async () => {
+  const info = await Device.getId()
+
+  console.log(info);
+};
 
 const initialState = {
   username: '',
@@ -16,8 +28,8 @@ const state = reactive({
 })
 
 const rules = {
-  username: { required, minValue: minValue(8), maxValue: maxValue(20) },
-  password: { required,minValue: minValue(8) },
+  username: { required, minLength: minLength(8), maxLength: maxLength(20) },
+  password: { required,minLength: minLength(8) },
 }
 
 const v$ = useVuelidate(rules, state)
@@ -29,6 +41,19 @@ function clear () {
     state[key] = value
   }
 }
+
+const handleLogin = () => {
+  logDeviceInfo()
+  console.log('auth ' + state )
+  if(!v$.value.$error){
+    authStore.login(state).then(() => {
+      router.push({name: 'admin.index'})
+    })
+  }
+  // authStore.login(initialState).then(() => {
+  //   router.push({name: 'dashboard'})
+  // })
+}
 </script>
 
 <template>
@@ -38,11 +63,10 @@ function clear () {
         <v-col cols="12" lg="4" offset-lg="4" md="6" offset-md="3" sm="8" offset-sm="2">
           <v-card variant="flat" class="py-10" align="left">
             <v-img :src="imgLogin" />
-            <form>
+            <form @submit.prevent="handleLogin">
               <v-text-field
                 v-model="state.username"
                 :error-messages="v$.username.$errors.map(e => e.$message)"
-                :counter="20"
                 label="Username"
                 required
                 @input="v$.username.$touch"
@@ -61,12 +85,13 @@ function clear () {
 
               <div class="d-flex justify-space-between pt-10">
                 <v-btn
-                  @click="router.back()"
+                  @click="router.push('/')"
                 >
                   Back
                 </v-btn>
 
                 <v-btn
+                  type="submit"
                   @click="v$.$validate"
                 >
                   submit

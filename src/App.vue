@@ -8,7 +8,7 @@
 
 <script setup>
 import { useTheme } from 'vuetify'
-import { useAppStore } from "@/store/app";
+import { useAppStore } from "@/stores/app";
 import {watch} from "vue";
 import { onMounted } from 'vue'
 import { useDisplay } from 'vuetify'

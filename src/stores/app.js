@@ -1,6 +1,6 @@
 // Utilities
 import { defineStore } from 'pinia'
-import {reactive, ref} from "vue";
+import { reactive } from "vue";
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -11,18 +11,21 @@ export const useAppStore = defineStore('app', {
       fixed: false,
       rail: false,
     }),
-
-    auth: reactive({
-      user: {
-        type: Object
-      },
-      token: {
-        type: String,
-        default: null,
-      }
-    })
+    snackBar: reactive({
+      status: true,
+      color: 'pink',
+      text: 'Default Snackbar Text'
+    }),
   }),
+
   actions: {
+    closeSnackBar() {
+      this.snackBar.status = false
+    },
+    openSnackBar(message) {
+      this.snackBar.text = message ? message : this.snackBar.text
+      this.snackBar.status = true
+    },
     toggleTheme() {
       this.theme.dark = !this.theme.dark
     },
@@ -38,12 +41,5 @@ export const useAppStore = defineStore('app', {
     toggleRail() {
       this.theme.rail = !this.theme.rail
     },
-    login() {
-
-      let user = {id: 1, name: 'Edo Pranata', email: 'edo.pranata@gmail.com'}
-      let token = '1|mzIvVDm499mDry3gMheXBCsSxGlZwpkSSx45963Rf0741765'
-      this.auth.user = user
-      this.auth.token = token
-    }
   },
 })
