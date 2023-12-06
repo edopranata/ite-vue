@@ -7,6 +7,7 @@
 // Plugins
 import { registerPlugins } from '@/plugins'
 import { App as CapacitorApp } from '@capacitor/app';
+import {useAuthStore} from "@/stores/auth";
 // Components
 import App from './App.vue'
 
@@ -23,7 +24,11 @@ CapacitorApp.addListener('backButton', ({canGoBack}) => {
 
 const app = createApp(App)
 
+import './plugins/axios'
 registerPlugins(app)
 
-
-app.mount('#app')
+const {attempt} = useAuthStore();
+attempt(localStorage.getItem('token'))
+  .then(() => {
+    app.mount('#app')
+  })

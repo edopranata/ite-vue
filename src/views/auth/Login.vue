@@ -19,8 +19,8 @@ const logDeviceInfo = async () => {
 };
 
 const initialState = {
-  username: '',
-  password: '',
+  username: 'edopranata',
+  password: 'password',
 }
 
 const state = reactive({

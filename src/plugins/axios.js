@@ -1,13 +1,13 @@
 import axios from "axios";
-import {useAppStore} from "@/stores/app";
+import {useAuthStore} from "@/stores/auth";
 
 axios.defaults.baseURL = "http://api.test/api";
 
 axios.interceptors.request.use(function (config) {
-  const { getToken:token } = useAppStore();
+  const { getToken:token } = useAuthStore();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    config.headers.setAccept('application/json')
+    config.headers.Accept = 'application/json'
     localStorage.setItem('token', token);
   }
   return config;

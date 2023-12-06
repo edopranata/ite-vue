@@ -44,7 +44,11 @@ export const useAuthStore = defineStore('auth', {
       }
 
       try {
-        let response = await axios.get('/user')
+        let response = await axios.get('/user', {
+          headers: {
+            Authorization: 'Bearer ' + token
+          }
+        })
         this.setUser(response.data);
 
         return response;
@@ -52,6 +56,7 @@ export const useAuthStore = defineStore('auth', {
         this.setToken(null);
         this.setUser(null);
         localStorage.removeItem('token');
+        // this.openSnackBar('Error')
       }
     },
 
@@ -60,13 +65,16 @@ export const useAuthStore = defineStore('auth', {
         let response = await axios.post('/auth/login', credentials);
         await this.attempt(response.data.access_token)
 
-        this.openSnackBar('You have been logged in successfully!')
-      } catch (e) {
-        if (e.response.status === 422) {
+        // this.openSnackBar('You have been logged in successfully!')
+      } catch (err) {
+        let e = err.toArray()
+        if (e?.response?.status === 422) {
+          console.log(422)
           this.errors = e.response.data.errors
         }
 
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
+          console.log(401)
           this.errors = {"email": [e.response.data.message]}
         }
 
@@ -81,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
         this.setUser(null);
         localStorage.removeItem('token');
 
-        this.openSnackBar('You have been logged out successfully!')
+        // this.openSnackBar('You have been logged out successfully!')
         return response;
       } catch (e) {
         this.setToken(null);

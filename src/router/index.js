@@ -21,6 +21,13 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (Home-[hash].js) for this route
         // which is lazy-loaded when the route is visited.
+        beforeEnter: (to, from, next) => {
+          if (localStorage.getItem('token')) {
+            next({name: 'admin.index'});
+          } else {
+            next();
+          }
+        },
         component: () => import('@/views/auth/Login.vue'),
       },
     ],
@@ -28,6 +35,13 @@ const routes = [
   {
     path: '/admin',
     component: () => import('@/layouts/admin/Admin.vue'),
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('token')) {
+        next();
+      } else {
+        next({name: 'login'});
+      }
+    },
     children: [
       {
         path: '',

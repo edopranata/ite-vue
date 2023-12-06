@@ -3,6 +3,21 @@
     <transition name="slide-x" mode="out-in">
       <component :is="Component" :key="route.name" />
     </transition>
+    <v-snackbar
+      v-model="appStore.snackBar.status"
+    >
+      {{ appStore.snackBar.text }}
+
+      <template v-slot:actions>
+        <v-btn
+          color="pink"
+          variant="text"
+          @click.stop="appStore.closeSnackBar()"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </router-view>
 </template>
 

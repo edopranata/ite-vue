@@ -1,21 +1,6 @@
 <template>
   <v-app>
     <v-layout>
-      <v-snackbar
-        v-model="appStore.snackBar.status"
-      >
-        {{ appStore.snackBar.text }}
-
-        <template v-slot:actions>
-          <v-btn
-            color="pink"
-            variant="text"
-            @click.stop="appStore.closeSnackBar()"
-          >
-            Close
-          </v-btn>
-        </template>
-      </v-snackbar>
       <v-navigation-drawer
         v-model="appStore.theme.drawer"
         :rail="appStore.theme.rail"
