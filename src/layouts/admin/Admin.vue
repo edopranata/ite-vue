@@ -7,6 +7,14 @@
         permanent
         app
       >
+        <v-list v-if="authenticated">
+          <v-list-item
+              prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+              title="Sandra Adams"
+              subtitle="sandra_a88@gmailcom"
+          ></v-list-item>
+        </v-list>
+        <v-divider v-if="authenticated"></v-divider>
         <v-list density="compact">
           <v-list-item
             v-for="(item, i) in items"
@@ -22,6 +30,21 @@
             <v-list-item-title v-text="item.title"></v-list-item-title>
           </v-list-item>
         </v-list>
+        <template v-slot:append>
+          <v-list density="compact" v-if="authenticated">
+            <v-list-item color="secondary" @click.stop="handleLogout">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-logout"></v-icon>
+              </template>
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+<!--          <div class="pt-10 pb-2">-->
+<!--            <v-btn block @click.stop="handleLogout" flat>-->
+<!--              Logout-->
+<!--            </v-btn>-->
+<!--          </div>-->
+        </template>
       </v-navigation-drawer>
       <v-app-bar
         :order="appStore.theme.order"
@@ -96,7 +119,14 @@
 <script setup>
 import AdminView from "@/layouts/admin/AdminView.vue";
 import { useAppStore } from "@/stores/app"
+import {useAuthStore} from "@/stores/auth";
+import { storeToRefs } from "pinia";
+import router from "@/router";
+
 const appStore = useAppStore()
+
+const {logout} = useAuthStore()
+const {authenticated} = storeToRefs(useAuthStore())
 
 const items = [
   {
@@ -110,4 +140,10 @@ const items = [
     to: '/login'
   }
 ]
+
+const handleLogout = () => {
+  logout().then(() => {
+    router.push({name: 'login'})
+  })
+}
 </script>

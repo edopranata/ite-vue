@@ -1,11 +1,14 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 import NProgress from 'nprogress';
+import DefaultLayout from '@/layouts/default/Default.vue'
+import AdminLayout from '@/layouts/admin/Admin.vue'
+
 
 const routes = [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    component: DefaultLayout,
     children: [
       {
         path: '',
@@ -34,7 +37,7 @@ const routes = [
   },
   {
     path: '/admin',
-    component: () => import('@/layouts/admin/Admin.vue'),
+    component: AdminLayout,
     beforeEnter: (to, from, next) => {
       if (localStorage.getItem('token')) {
         next();

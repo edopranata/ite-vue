@@ -1,63 +1,63 @@
 <script setup>
-
-import imgLogin from '@/assets/login.png'
-import { reactive } from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import {maxLength, minLength, required} from '@vuelidate/validators'
-import router from "@/router";
+import { maxLength, minLength, required } from '@vuelidate/validators'
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
+import { Device } from '@capacitor/device';
+import imgLogin from '@/assets/login.png'
+import router from "@/router";
 
 const authStore = useAuthStore()
-const { errors } = storeToRefs(useAuthStore())
-
-import { Device } from '@capacitor/device';
-const logDeviceInfo = async () => {
-  const info = await Device.getId()
-
-  console.log(info);
-};
-
-const initialState = {
-  username: 'edopranata',
-  password: 'password',
-}
-
-const state = reactive({
-  ...initialState,
+onMounted( () => {
+  Device.getId().then( (device) => {
+    form.deviceId = device.identifier
+  })
 })
 
-const rules = {
-  username: { required, minLength: minLength(8), maxLength: maxLength(20) },
-  password: { required,minLength: minLength(8) },
-}
+const form = reactive({
+  username: 'edopranata',
+  password: 'passwordd',
+  deviceId: null
+})
 
-const v$ = useVuelidate(rules, state)
+const requiredLenght = ref(8)
 
-function clear () {
-  v$.value.$reset()
+const rules = computed(() => ({
+  username: { required, minLength: minLength(requiredLenght.value)},
+  password: { required, minLength: minLength(requiredLenght.value)},
+  deviceId: { required },
+}))
 
-  for (const [key, value] of Object.entries(initialState)) {
-    state[key] = value
-  }
-}
+const v$ = useVuelidate(rules, form)
 
 const handleLogin = () => {
-  logDeviceInfo()
-  console.log('auth ' + state )
   if(!v$.value.$error){
-    authStore.login(state).then(() => {
+    authStore.login(form).then(() => {
       router.push({name: 'admin.index'})
     })
   }
-  // authStore.login(initialState).then(() => {
-  //   router.push({name: 'dashboard'})
-  // })
 }
+
 </script>
 
 <template>
   <v-container class="fill-height">
+    <v-snackbar
+      v-model="authStore.snackBar.status"
+    >
+      {{ authStore.snackBar.text }}
+
+      <template v-slot:actions>
+        <v-btn
+          color="pink"
+          variant="text"
+          @click.stop="authStore.closeSnackBar()"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-responsive class="align-center text-center fill-height">
       <v-row align="center">
         <v-col cols="12" lg="4" offset-lg="4" md="6" offset-md="3" sm="8" offset-sm="2">
@@ -65,7 +65,7 @@ const handleLogin = () => {
             <v-img :src="imgLogin" />
             <form @submit.prevent="handleLogin">
               <v-text-field
-                v-model="state.username"
+                v-model="form.username"
                 :error-messages="v$.username.$errors.map(e => e.$message)"
                 label="Username"
                 required
@@ -74,7 +74,7 @@ const handleLogin = () => {
               ></v-text-field>
 
               <v-text-field
-                v-model="state.password"
+                v-model="form.password"
                 :error-messages="v$.password.$errors.map(e => e.$message)"
                 label="Password"
                 type="password"

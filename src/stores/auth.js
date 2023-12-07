@@ -1,12 +1,24 @@
 import { defineStore } from 'pinia'
 import axios from "axios";
+import {reactive} from "vue";
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     token: null,
     errors: null,
+
+    snackBar: reactive({
+        status: false,
+        color: 'pink',
+        text: 'Default Snackbar Text'
+    }),
   }),
+
+
   getters: {
     authenticated() {
       return !!this.token && !!this.user;
@@ -26,6 +38,13 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
+    closeSnackBar() {
+        this.snackBar.status = false
+    },
+    openSnackBar(message) {
+        this.snackBar.text = message ? message : this.snackBar.text
+        this.snackBar.status = true
+    },
     setToken(token) {
       this.token = token;
     },
@@ -44,52 +63,45 @@ export const useAuthStore = defineStore('auth', {
       }
 
       try {
-        let response = await axios.get('/user', {
-          headers: {
-            Authorization: 'Bearer ' + token
-          }
-        })
-        this.setUser(response.data);
+        let response = await axios.get('/user')
 
+        this.setUser(response.data);
         return response;
       } catch (e) {
         this.setToken(null);
         this.setUser(null);
         localStorage.removeItem('token');
-        // this.openSnackBar('Error')
+        const httpError = e.message
+        this.openSnackBar(httpError)
       }
     },
 
     async login(credentials) {
       try {
         let response = await axios.post('/auth/login', credentials);
-        await this.attempt(response.data.access_token)
+        const token = response?.data?.data?.auth?.token
+        if(response){
+            await this.attempt(token)
+        }
 
-        // this.openSnackBar('You have been logged in successfully!')
+        toast.info('You have been logged in successfully!')
       } catch (err) {
-        let e = err.toArray()
-        if (e?.response?.status === 422) {
-          console.log(422)
-          this.errors = e.response.data.errors
-        }
+          const httpError = err.message
+          const responseMessage = err.response.data.status.message
 
-        if (e?.response?.status === 401) {
-          console.log(401)
-          this.errors = {"email": [e.response.data.message]}
-        }
+          toast.error(responseMessage ?? httpError)
 
-        throw e;
       }
     },
 
     async logout() {
       try {
-        let response = await axios.post('/logout');
+        let response = await axios.post('/auth/logout');
         this.setToken(null);
         this.setUser(null);
         localStorage.removeItem('token');
 
-        // this.openSnackBar('You have been logged out successfully!')
+        toast.info('You have been logged out successfully!')
         return response;
       } catch (e) {
         this.setToken(null);

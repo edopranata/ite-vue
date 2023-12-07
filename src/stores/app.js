@@ -12,7 +12,7 @@ export const useAppStore = defineStore('app', {
       rail: false,
     }),
     snackBar: reactive({
-      status: true,
+      status: false,
       color: 'pink',
       text: 'Default Snackbar Text'
     }),
